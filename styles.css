@@ -1,0 +1,152 @@
+.font-bold {
+    font-weight: bold;
+}
+
+.font-italic {
+    font-style: italic;
+}
+
+.font-underline {
+    text-decoration: underline;
+}
+
+.font-proportional {
+    font-family: serif;
+    font-size: 17px;
+}
+
+.font-fixed-width {
+    font-family: monospace;
+    font-size: 15px;
+    padding: 2px 0;
+}
+
+.textcolor-0 {               /* black */
+    color: #000;
+}
+
+.textcolor-1 {               /* blue */
+    color: #00a;
+}
+
+.textcolor-2 {               /* green */
+    color: #0a0;
+}
+
+.textcolor-3 {               /* cyan */
+    color: #0aa;
+}
+
+.textcolor-4 {               /* red */
+    color: #a00;
+}
+
+.textcolor-5 {               /* magenta */
+    color: #a0a;
+}
+
+.textcolor-6 {               /* brown */
+    color: #a50;
+}
+
+.textcolor-7 {               /* white */
+    color: #aaa;
+}
+
+.textcolor-8 {               /* dark gray */
+    color: #555;
+}
+
+.textcolor-9 {               /* light blue */
+    color: #55f;
+}
+
+.textcolor-10 {              /* light green */
+    color: #5f5;
+}
+
+.textcolor-11 {              /* light cyan */
+    color: #5ff;
+}
+
+.textcolor-12 {              /* light red */
+    color: #f55;
+}
+
+.textcolor-13 {              /* light magenta */
+    color: #f5f;
+}
+
+.textcolor-14 {              /* yellow */
+    color: #ff5;
+}
+
+.textcolor-15 {              /* bright white */
+    color: #fff;
+}
+
+
+
+.bgcolor-0 {                 /* black */
+    background-color: #000;
+}
+
+.bgcolor-1 {                 /* blue */
+    background-color: #00a;
+}
+
+.bgcolor-2 {                 /* green */
+    background-color: #0a0;
+}
+
+.bgcolor-3 {                 /* cyan */
+    background-color: #0aa;
+}
+
+.bgcolor-4 {                 /* red */
+    background-color: #a00;
+}
+
+.bgcolor-5 {                 /* magenta */
+    background-color: #a0a;
+}
+
+.bgcolor-6 {                 /* brown */
+    background-color: #a50;
+}
+
+.bgcolor-7 {                 /* white */
+    background-color: #aaa;
+}
+
+.bgcolor-8 {                 /* dark gray */
+    background-color: #555;
+}
+
+.bgcolor-9 {                 /* light blue */
+    background-color: #55f;
+}
+
+.bgcolor-10 {                /* light green */
+    background-color: #5f5;
+}
+
+.bgcolor-11 {                /* light cyan */
+    background-color: #5ff;
+}
+
+.bgcolor-12 {                /* light red */
+    background-color: #f55;
+}
+
+.bgcolor-13 {                /* light magenta */
+    background-color: #f5f;
+}
+
+.bgcolor-14 {                /* yellow */
+    background-color: #ff5;
+}
+
+.bgcolor-15 {                /* bright white */
+    background-color: #fff;
+}

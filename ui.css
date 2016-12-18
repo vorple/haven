@@ -1,0 +1,119 @@
+body, html {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    overflow-y: scroll;
+}
+
+body, input, label, #loader {
+    color: #000;
+    background-color: #fff;
+}
+
+input[type=text] {
+    height: auto;
+    font-size: inherit;
+}
+
+html.theme-dark body,
+html.theme-dark input,
+html.theme-dark label,
+html.theme-dark #loader {
+    color: #aaa;
+    background-color: #000;
+}
+
+html.monospace body,
+html.monospace input,
+html.monospace label,
+html.monospace #loader {
+    font-family: monospace;
+}
+
+body, input, label {
+    font-size: 17px;
+}
+
+#output {
+    max-width: 751px;
+    padding: 0 15px 10px 15px;
+    margin: 0 auto;
+}
+
+#output span {
+    white-space: pre-wrap;
+}
+
+#lineinput-field {
+    border: 0;
+    box-shadow: none;
+    display: inline;
+    outline: 0;
+    padding: 0;
+    width: 100%;
+}
+
+#prompt {
+    display: inline-block;
+    width: 500px;
+}
+
+.hugowindow {
+    position: fixed;
+    overflow: hidden;
+}
+
+.safarifix .hugowindow {
+    position: absolute;
+}
+
+#loader {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+}
+
+#loader-message {
+    margin-top: 100px;
+    text-align: center;
+}
+
+#loader.stopped #loader-message {
+    text-decoration: line-through;
+}
+
+#spinner {
+    position: fixed;
+    padding-top: 90px;
+    font-family: serif;
+    color: #555;
+    background-color: #000;
+    opacity: 0.7;
+    top: 0;
+    left: 5%;
+    width: 100%;
+    height: 100%;
+    line-height: 100%;
+    font-size: 50px;
+    animation: slide 5s ease-in-out forwards;
+    animation-iteration-count: infinite;
+}
+
+@keyframes slide {
+    50% { left: 90%; }
+    100% { left: 5%; }
+}
+
+#fatal-error {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 1em;
+    color: #fff;
+    background-color: #600;
+}
