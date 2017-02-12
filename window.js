@@ -7,7 +7,8 @@
     var outputWindows = [ document.getElementById( 'window0' ) ],
         // the parent of all windows
         mainContainer = document.getElementById( 'output' ),
-        currentContainers = [ outputWindows[0] ];
+        currentContainers = [ outputWindows[0] ],
+        position = [];
 
 
     /**
@@ -33,6 +34,7 @@
         currentContainers[ targetWindow ].appendChild( textContainer );
     };
 
+
     /**
      * Clears an output window.
      *
@@ -40,12 +42,12 @@
      */
     win.clear = function( targetWindow ) {
         if( targetWindow === undefined ) {
-            hugoui.buffer.flush( 0 );
+            haven.buffer.flush( 0 );
             mainContainer.innerHTML = "";
             mainContainer.appendChild( outputWindows[ 0 ] );
             haven.style.apply( outputWindows[ 0 ], 0 );
             haven.style.apply( document.body, 0 );
-            hugoui.position.reset();
+            win.position.reset();
         }
         else {
             if( !outputWindows[ targetWindow ] ) {
@@ -103,6 +105,40 @@
      */
     win.get = function( targetWindow ) {
         return outputWindows[ targetWindow ];
+    };
+
+
+    /**
+     * Set the cursor position inside the target window.
+     *
+     * @type {{reset: reset, set: set}}
+     */
+    win.position = {
+        reset: function( targetWindow ) {
+            // if no window specified, reset all positions
+            if( targetWindow === undefined ) {
+                position = {
+                    col: null,
+                    line: null
+                };
+            }
+            else {
+                win.position.set( null, null, targetWindow );
+            }
+        },
+
+        restore: function( oldState ) {
+            position = oldState;
+        },
+
+        set: function( col, line, hugoWindow ) {
+            if( !position[ hugoWindow ] ) {
+                position[ hugoWindow ] = {};
+            }
+
+            position[ hugoWindow ].col = col;
+            position[ hugoWindow ].line = line;
+        }
     };
 
     haven.window = win;

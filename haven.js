@@ -63,12 +63,12 @@
      * Start the game. If assets haven't loaded yet, the game starts
      * as soon as they're ready.
      */
-    haven.start = function() {
+    haven.start = function( opt ) {
         // read options from URL
-        haven.options.init();
+        haven.options.init( opt.options );
 
         // load the story file
-        haven.file.init();
+        haven.file.init( opt.virtualStoryfile );
 
         // set up input handlers
         haven.assets.addCallback( function( cb ) {

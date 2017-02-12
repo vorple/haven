@@ -10,7 +10,7 @@
             bold: false,
             italic: false,
             underline: false,
-            proportional: true,
+//            proportional: true,
             original: 0     // the original integer value of the font
         }];
 
@@ -70,13 +70,54 @@
         }
 
         if( !font[ targetWindow ].proportional ) {
-            elem.className += " font-fixed-width";
+//            elem.className += " font-fixed-width";
         }
 
         // apply same styles to the prompt
         if( targetWindow === 0 ) {
             // haven.prompt.input.className = elem.className;
         }
+    };
+
+
+    style.color = {
+        restore: function( oldState ) {
+            currentColors = oldState;
+        },
+
+        /**
+         * Set colors in windows
+         *
+         * @param which
+         * @param color
+         * @param targetWindow
+         */
+        set: function( which, color, targetWindow ) {
+            if( !currentColors[ targetWindow ] ) {
+                currentColors[ targetWindow ] = defaultColors( targetWindow );
+            }
+
+//                console.log( 'changing', which, 'color to', color, 'in window', targetWindow );
+            if( currentColors[ targetWindow ][ which ] === color ) {
+                // the color doesn't change, do nothing
+                return;
+            }
+
+            haven.buffer.flush( targetWindow );
+
+            currentColors[ targetWindow ][ which ] = color;
+            // style.apply( flushedText, targetWindow );
+        }
+    };
+
+
+    /**
+     * Restore the entire style state.
+     *
+     * @param oldState
+     */
+    style.restore = function( oldState ) {
+        font = oldState;
     };
 
 

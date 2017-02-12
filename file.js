@@ -8,7 +8,7 @@
         gamefile,
         checksum,
         datadir,
-        autosaveFilename;
+        storyFilename;
 
     var OPCODE_CONTROL_FILE = "OpCtlAPI",
         OPCODE_CHECK_FILE = "OpCheck";
@@ -33,29 +33,6 @@
 
 
     /**
-     * Pass the autosave's filename to the engine that takes care of
-     * reloading the save.
-     */
-    function restoreAutosave() {
-        try {
-            // Try to open the autosave file.
-            // If it doesn't exist, this throws an error.
-            FS.stat( autosaveFilename );
-
-            Module.ccall(
-                'hugojs_set_autosave_filename',
-                'null',
-                [ 'string' ],
-                [ autosaveFilename ]
-            );
-        }
-        catch(e) {
-            // autosave file doesn't exist, do nothing
-        }
-    }
-
-
-    /**
      * Writes the loaded game file into the virtual file system, but only
      * if both the interpreter and the game file are both loaded.
      *
@@ -74,7 +51,7 @@
         document.getElementById( 'loader-message' ).innerHTML = 'Starting game';
 
         FS.writeFile(
-            'storyfile.gblorb',
+            storyFilename,
             gamefile,
             { encoding: 'binary' }
         );
@@ -99,8 +76,8 @@
         // synchronize with local data
         FS.syncfs( true, function() {
             if( haven.options.get( 'autosave' ) ) {
-                autosaveFilename = '/gamedata_' + checksum + '/autosave';
-                restoreAutosave();
+                haven.state.autosave.setName( '/gamedata_' + checksum + '/autosave' );
+                haven.state.autosave.restore();
             }
 
             // start reacting to keypresses
@@ -123,6 +100,7 @@
             }
             */
 
+
             done();
         });
     }
@@ -131,11 +109,13 @@
     /**
      * Start loading the story file.
      */
-    file.init = function () {
+    file.init = function( virtualFilename ) {
         var gameUrl = haven.options.get( 'story' ),
             requestUrl,
             proxyOption = haven.options.get( 'use_proxy' ),
             useProxy;
+
+        storyFilename = virtualFilename;
 
         if( !gameUrl ) {
             haven.error( "No story file specified" );

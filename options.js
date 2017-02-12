@@ -71,14 +71,24 @@
     /**
      * Read options from the URL
      */
-    options.init = function() {
+    options.init = function( defaults ) {
         var option_key;
 
-        for( option_key in opt ) {
-            if( opt.hasOwnProperty( option_key ) && opt[ option_key ] === undefined ) {
-                opt[ option_key ] = opt[ option_key ];
+        defaults = defaults || {};
+
+        for( option_key in defaults ) {
+            if( defaults.hasOwnProperty( option_key ) && defaults[ option_key ] !== undefined ) {
+                opt[ option_key ] = defaults[ option_key ];
             }
         }
+
+        /*
+        for( option_key in opt ) {
+            if( opt.hasOwnProperty( option_key ) && opt[ option_key ] === undefined ) {
+                opt[ option_key ] = opt[ option_key ];  // ???
+            }
+        }
+        */
 
         if( !opt.lock_story ) {
             opt.story = getParameter( 'story', 'string', opt.story );

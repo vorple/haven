@@ -17,6 +17,14 @@ input[type=text] {
     font-size: inherit;
 }
 
+a {
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
 html.theme-dark body,
 html.theme-dark input,
 html.theme-dark label,
