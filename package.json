@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Haven IF interpreter frame",
   "scripts": {
-    "build": "rm -rf ../build/haven; mkdir ../build/haven; uglifyjs vendor/fastclick.js haven.js assets.js buffer.js file.js input.js loader.js options.js prompt.js style.js window.js bootstrap.js -o ../build/haven/haven.js -c --screw-ie8",
+    "build": "rm -rf ../build/haven; mkdir ../build/haven; cp *.css ../build/haven; uglifyjs vendor/fastclick.js haven.js assets.js buffer.js file.js input.js loader.js options.js prompt.js style.js window.js bootstrap.js -o ../build/haven/haven.js -c --screw-ie8",
     "lint": "jshint *.js"
   },
   "repository": {

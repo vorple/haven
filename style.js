@@ -10,7 +10,7 @@
             bold: false,
             italic: false,
             underline: false,
-            proportional: true,
+//            proportional: true,
             original: 0     // the original integer value of the font
         }];
 
@@ -69,7 +69,7 @@
             }
         }
 
-        if( !font[ targetWindow ].proportional ) {
+        if( font[ targetWindow ].hasOwnProperty( 'proportional' ) && !font[ targetWindow ].proportional ) {
             elem.className += " font-fixed-width";
         }
 
