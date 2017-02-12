@@ -69,8 +69,8 @@
             }
         }
 
-        if( !font[ targetWindow ].proportional ) {
-//            elem.className += " font-fixed-width";
+        if( font[ targetWindow ].hasOwnProperty( 'proportional' ) && !font[ targetWindow ].proportional ) {
+            elem.className += " font-fixed-width";
         }
 
         // apply same styles to the prompt
