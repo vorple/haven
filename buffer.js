@@ -62,9 +62,11 @@
         }
 
         if( text.indexOf( '\n' ) > -1 || text.indexOf( '\r' ) > -1 ) {
-            outputBuffer[ targetWindow ] += encodeHtml( text.substr( 0, Math.max( text.lastIndexOf( '\n' ), text.lastIndexOf( '\r' ) ) + 1 ) );
+            var nextLBR = Math.max( text.lastIndexOf( '\n' ), text.lastIndexOf( '\r' ) ) + 1;
+
+            outputBuffer[ targetWindow ] += encodeHtml( text.substr( 0, nextLBR ) );
             haven.buffer.flush( targetWindow );
-            outputBuffer[ targetWindow ] = encodeHtml( text.substr( Math.max( text.lastIndexOf( '\n' ), text.lastIndexOf( '\r' ) ) + 1 ) );
+            outputBuffer[ targetWindow ] = encodeHtml( text.substr( nextLBR ) );
         }
         else {
             outputBuffer[ targetWindow ] += encodeHtml( text );
@@ -88,14 +90,8 @@
             return;
         }
 
-        /*
-        if( !position[ targetWindow ] ) {
-            position[ targetWindow ] = {
-                col: null,
-                line: null
-            };
-        }
-        */
+//        console.log('flushing', outputBuffer[ targetWindow ] );
+        // if( outputBuffer[ targetWindow ] === '\n') debugger;
 
         haven.window.append( outputBuffer[ targetWindow ], targetWindow );
         outputBuffer[ targetWindow ] = "";

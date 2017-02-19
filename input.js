@@ -67,7 +67,7 @@
             haven.buffer.flush();
 
             if( haven.isTextPrinted ) {
-                haven.scrollOrFocus();
+                haven.prompt.scrollOrFocus();
             }
 
             return keypressBuffer.length > 0;
@@ -126,12 +126,11 @@
             inputMode = 'getkey';
 
             haven.buffer.flush();
-
-            haven.doScroll = true;
+            haven.prompt.setDoScroll();
 
             // if there's something in the keypress buffer, "push" that key
             if( keypressBuffer.length > 0 ) {
-                haven.keypress.send({ keyCode: keypressBuffer.shift() });
+                input.keypress.send({ keyCode: keypressBuffer.shift() });
             }
         }
     };

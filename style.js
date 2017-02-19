@@ -6,13 +6,7 @@
         // currently set colors
     var currentColors = [ defaultColors( 0 ) ],
         // currently set fonts
-        font = [{
-            bold: false,
-            italic: false,
-            underline: false,
-//            proportional: true,
-            original: 0     // the original integer value of the font
-        }];
+        font = [ defaultStyles() ];
 
 
     /**
@@ -38,49 +32,84 @@
 
 
     /**
+     * Default styles of the font
+     */
+    function defaultStyles() {
+        return {
+            bold: false,
+            italic: false,
+            underline: false,
+            proportional: false,
+            original: 0     // the original integer value of the font
+        };
+    }
+
+
+    /**
      * Set currently active font styles and colors to an element.
      *
      * @param elem
      * @param targetWindow
      */
     style.apply = function( elem, targetWindow ) {
+        var newClasses = [],
+            prompt = haven.prompt.get().getElementsByTagName('INPUT')[0],
+            setPromptStyle = (targetWindow === 0);
+
         if( !currentColors[ targetWindow ] ) {
             currentColors[ targetWindow ] = defaultColors( targetWindow );
         }
 
-        // TODO: don't wipe out other classes
         // TODO: parametrize – Vorple doesn't want interpreter to set colors!
-//        elem.className = "textcolor-" + currentColors[ targetWindow ].text + " bgcolor-" + currentColors[ targetWindow ].background;
+        newClasses.push( "textcolor-" + currentColors[ targetWindow ].text );
+        newClasses.push( "bgcolor-" + currentColors[ targetWindow ].background );
 
-        /*
-        // TODO: cleaner solution
-        if( outputWindow.indexOf( elem ) > 0 ) {    // skips main window (index 0) on purpose
-            elem.className += " hugowindow";
+        // remove old class styles
+        elem.className = elem.className.replace( /\b(text|bg)color-\d+/g, "" );
+        elem.classList.remove( "font-fixed-width" );
+
+        if( setPromptStyle ) {
+            prompt.className = prompt.className.replace( /\b(text|bg)color-\d+/g, "" );
+            prompt.classList.remove( "font-fixed-width" );
         }
-        */
 
         if( !font[ targetWindow ] ) {
-            font[ targetWindow ] = {};
+            font[ targetWindow ] = defaultStyles();
         }
 
         for( var prop in font[ targetWindow ] ) {
-            if( font[ targetWindow ].hasOwnProperty( prop ) && font[ targetWindow ][ prop ] ) {
-                elem.className += " font-" + prop;
+            if( font[ targetWindow ].hasOwnProperty( prop ) ) {
+                elem.classList.remove( "font-" + prop );
+
+                if( setPromptStyle ) {
+                    prompt.classList.remove( "font-" + prop );
+                }
+
+                if( font[ targetWindow ][ prop ] ) {
+                    newClasses.push( "font-" + prop );
+                }
             }
         }
 
         if( font[ targetWindow ].hasOwnProperty( 'proportional' ) && !font[ targetWindow ].proportional ) {
-            elem.className += " font-fixed-width";
+            newClasses.push( "font-fixed-width" );
         }
 
-        // apply same styles to the prompt
-        if( targetWindow === 0 ) {
-            // haven.prompt.input.className = elem.className;
+        for( var i = 0; i < newClasses.length; ++i ) {
+            elem.classList.add( newClasses[ i ] );
+
+            if( setPromptStyle ) {
+                prompt.classList.add( newClasses[ i ] );
+            }
         }
     };
 
 
     style.color = {
+        get: function() {
+            return currentColors;
+        },
+
         restore: function( oldState ) {
             currentColors = oldState;
         },
@@ -107,6 +136,13 @@
 
             currentColors[ targetWindow ][ which ] = color;
             // style.apply( flushedText, targetWindow );
+        }
+    };
+
+
+    style.font = {
+        get: function() {
+            return font;
         }
     };
 

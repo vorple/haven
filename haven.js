@@ -77,7 +77,10 @@
         });
 
         // set up the prompt
-        haven.prompt.init();
+        haven.prompt.init({
+            enginePrompt: !!opt.enginePrompt,
+            unicode: !!opt.unicode
+        });
 
         // remove the loader
         haven.assets.addCallback( function( cb ) {

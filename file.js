@@ -10,9 +10,6 @@
         datadir,
         storyFilename;
 
-    var OPCODE_CONTROL_FILE = "OpCtlAPI",
-        OPCODE_CHECK_FILE = "OpCheck";
-
 
     /**
      * FNV32-algorithm to calculate the story file's checksum.
@@ -81,25 +78,7 @@
             }
 
             // start reacting to keypresses
-            // haven.keypress.init();
-
-            /*
-            // save the virtual file that tells the game file we support extra opcodes
-            if( hugojs_options.extra_opcodes ) {
-                FS.writeFile(
-                    OPCODE_CHECK_FILE,
-                    [ 89, 47 ],   // == 12121
-                    {encoding: 'binary'}
-                );
-            }
-            else {
-                try {
-                    FS.unlink( OPCODE_CHECK_FILE );
-                }
-                catch(e) {}
-            }
-            */
-
+            haven.input.keypress.init();
 
             done();
         });
@@ -202,49 +181,6 @@
 
 
     /**
-     * Autosave game.
-     */
-    file.autosave = function() {
-        if( !haven.options.autosave ) {
-            return;
-        }
-
-        // save UI state
-        FS.writeFile(
-            autosaveFilename + '_haven_uidata',
-            JSON.stringify( haven.getUIState() ),
-            { encoding: 'utf8' }
-        );
-
-        // trigger engine autosave
-        Module.ccall(
-            'haven_set_autosave_filename',
-            'int',
-            [ 'string' ],
-            [ autosaveFilename ]
-        );
-    };
-
-
-    /**
-     * Read the UI state from the filesystem.
-     */
-    file.readUIState = function() {
-        try {
-            var state = FS.readFile(
-                autosaveFilename + '_haven_uidata',
-                {encoding: 'utf8'}
-            );
-
-            return JSON.parse( state );
-        }
-        catch(e) {
-            return null;
-        }
-    };
-
-
-    /**
      * Ask the user to provide a file name.
      *
      * @param why The reason why a file is being prompted.
@@ -277,16 +213,26 @@
 
 
     /**
-     * The engine calls this when it's been initialized.
+     * Read the UI state from the filesystem.
      */
-    file.engineLoaded = function() {
-        interpreterLoaded = true;
-        return writeGamefile();
+    file.readUIState = function() {
+        try {
+            var state = FS.readFile(
+                autosaveFilename + '_haven_uidata',
+                {encoding: 'utf8'}
+            );
+
+            return JSON.parse( state );
+        }
+        catch(e) {
+            return null;
+        }
     };
 
 
     /**
      * Synchronize virtual filesystem status with IndexedDB.
+     * Called by the engine.
      */
     file.syncfs = function() {
         FS.syncfs( false, function() {} );

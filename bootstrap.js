@@ -5,7 +5,7 @@ window.Module = {
     print: function( text ) {
         // The engine should always use the custom text printing methods.
         // Anything printed to stdout is an error.
-        haven.error( text );
+        haven.error( "Unexpected engine output to stdout: " + text );
     },
     printErr: function() {
         console.log( arguments );

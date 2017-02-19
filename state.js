@@ -26,11 +26,13 @@
 
     state.autosave = {
         /**
-         * Remember the autosave's filename
-         * @param filename
+         * Delete the autosave file.
          */
-        setName: function( filename ) {
-            autosaveFilename = filename;
+        remove: function() {
+            try {
+                FS.unlink( autosaveFilename );
+            }
+            catch(e) {}
         },
 
         /**
@@ -53,6 +55,35 @@
             catch(e) {
                 // autosave file doesn't exist, do nothing
             }
+        },
+
+        save: function() {
+            if( !haven.options.get( 'autosave' ) ) {
+                return;
+            }
+
+            // save UI state
+            FS.writeFile(
+                autosaveFilename + '_uidata',
+                JSON.stringify( haven.window.getUIState() ),
+                { encoding: 'utf8' }
+            );
+
+            // trigger engine autosave
+            Module.ccall(
+                'haven_save_autosave',
+                'int',
+                [ 'string' ],
+                [ autosaveFilename ]
+            );
+        },
+
+        /**
+         * Remember the autosave's filename
+         * @param filename
+         */
+        setName: function( filename ) {
+            autosaveFilename = filename;
         }
     };
 
@@ -62,15 +93,24 @@
      */
     state.restoreUI = function() {
         var savedState = readUIState(),
+            windowCount,
             i;
 
         if( !savedState ) {
             return;
         }
 
+        // if windowing has been set off in options, restore only the main window
+        if( haven.options.get( 'windowing' ) ) {
+            windowCount = savedState.windowContents.length;
+        }
+        else {
+            windowCount = 1;
+        }
+
         haven.window.clear();
 
-        for( i = 0; i < savedState.windowContents.length; ++i ) {
+        for( i = 0; i < windowCount; ++i ) {
             haven.window.create(
                 i,
                 savedState.windowDimensions[ i ].left,
@@ -83,39 +123,40 @@
         haven.style.color.restore( savedState.currentColors );
         haven.style.restore( savedState.font );
         haven.window.position.restore( savedState.position );
-        document.title = savedState.title || "HugoJS";
+
+        if( savedState.title ) {
+            document.title = savedState.title;
+        }
 
         for( i = 0; i < savedState.windowContents.length; ++i ) {
             haven.window.get( i ).innerHTML = savedState.windowContents[ i ];
-            haven.style.apply( outputWindow[ i ], i );
+            haven.style.apply( haven.window.get( i ), i );
         }
 
         haven.style.apply( document.body, 0 );
 
-        /* ***
+        // TODO: only for Hugo!
         // set the same style we had when saving
         Module.ccall(
             'hugojs_set_font',
             'null',
             [ 'int' ],
-            [ font[0].original ]
+            [ savedState.font[0].original ]
         );
 
         Module.ccall(
             'hugojs_set_colors',
             'null',
             [ 'int', 'int' ],
-            [ currentColors[0].text, currentColors[0].background ]
+            [ savedState.currentColors[0].text, savedState.currentColors[0].background ]
         );
-
-        */
 
         // restore command history
         haven.prompt.history.set( savedState.cmdHistory || [] );
 
         // scroll to the bottom
         window.scrollTo( 0, 9e9 );
-       // hugoui.doScroll = true;
+        haven.prompt.setDoScroll();
     };
 
 
