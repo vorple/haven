@@ -264,7 +264,6 @@
         outputWindows[ outputWindow ] = newWindow;
         currentContainers[ outputWindow ] = newWindow;
         haven.window.container.append( newWindow, mainContainer );
-        haven.style.apply( newWindow, outputWindow );
     };
 
 
