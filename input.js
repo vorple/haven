@@ -23,25 +23,6 @@
         // listen to keypresses and mouse clicks
         document.addEventListener( 'keydown', input.keypress.send, false );
         document.addEventListener( 'click', input.keypress.send, false );
-
-        // fix Mobile Safari bug that breaks fixed positioning when the virtual keyboard pops up
-        if( 'ontouchstart' in window ) {
-            // the focus event at the start of the game doesn't open the keyboard
-            var firstFocus = true;
-
-            input.addEventListener( 'focus', function () {
-                if( !firstFocus ) {
-                    document.body.classList.add( "safarifix" );
-                }
-                else {
-                    firstFocus = false;
-                }
-            } );
-
-            input.addEventListener( 'blur', function () {
-                document.body.classList.remove( "safarifix" );
-            } );
-        }
     };
 
 

@@ -417,6 +417,25 @@
             }
         }, false );
 
+        // fix Mobile Safari bug that breaks fixed positioning when the virtual keyboard pops up
+        if( 'ontouchstart' in window ) {
+            // the focus event at the start of the game doesn't open the keyboard
+            var firstFocus = true;
+
+            inputElem.addEventListener( 'focus', function () {
+                if( !firstFocus ) {
+                    document.body.classList.add( "safarifix" );
+                }
+                else {
+                    firstFocus = false;
+                }
+            } );
+
+            inputElem.addEventListener( 'blur', function () {
+                document.body.classList.remove( "safarifix" );
+            } );
+        }
+
         // resize input field when window size changes
         window.addEventListener( 'resize', resizeInput, false );
 
