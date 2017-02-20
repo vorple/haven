@@ -60,9 +60,10 @@
             currentColors[ targetWindow ] = defaultColors( targetWindow );
         }
 
-        // TODO: parametrize – Vorple doesn't want interpreter to set colors!
-        newClasses.push( "textcolor-" + currentColors[ targetWindow ].text );
-        newClasses.push( "bgcolor-" + currentColors[ targetWindow ].background );
+        if( haven.options.get( 'engineColors' ) ) {
+            newClasses.push( "textcolor-" + currentColors[ targetWindow ].text );
+            newClasses.push( "bgcolor-" + currentColors[ targetWindow ].background );
+        }
 
         // remove old class styles
         elem.className = elem.className.replace( /\b(text|bg)color-\d+/g, "" );
