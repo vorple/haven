@@ -77,6 +77,16 @@ body, input, label {
     position: absolute;
 }
 
+#fatal-error {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 1em;
+    color: #fff;
+    background-color: #600;
+}
+
 #loader {
     position: fixed;
     top: 0;
@@ -86,7 +96,7 @@ body, input, label {
 }
 
 #loader-message {
-    margin-top: 100px;
+    margin-top: 90px;
     text-align: center;
 }
 
@@ -96,32 +106,51 @@ body, input, label {
 
 #spinner {
     position: fixed;
-    padding-top: 90px;
     font-family: serif;
-    color: #555;
-    background-color: #000;
-    opacity: 0.7;
-    top: 0;
-    left: 5%;
+    color: #888;
+    top: 180px;
+    left: 0;
     width: 100%;
-    height: 100%;
+    text-align: center;
+    height: 50px;
     line-height: 100%;
     font-size: 50px;
-    animation: slide 5s ease-in-out forwards;
+    animation: spin 2s ease-in-out forwards;
     animation-iteration-count: infinite;
 }
 
-@keyframes slide {
-    50% { left: 90%; }
-    100% { left: 5%; }
+@-ms-keyframes spin {
+    from {
+        -ms-transform: rotate(0deg);
+    }
+    to {
+        -ms-transform: rotate(360deg);
+    }
 }
 
-#fatal-error {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    padding: 1em;
-    color: #fff;
-    background-color: #600;
+@-moz-keyframes spin {
+    from {
+        -moz-transform: rotate(0deg);
+    }
+    to {
+        -moz-transform: rotate(360deg);
+    }
+}
+
+@-webkit-keyframes spin {
+    from {
+        -webkit-transform: rotate(0deg);
+    }
+    to {
+        -webkit-transform: rotate(360deg);
+    }
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
 }
