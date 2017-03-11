@@ -6,7 +6,9 @@
         // currently set colors
     var currentColors = [ defaultColors( 0 ) ],
         // currently set fonts
-        font = [ defaultStyles() ];
+        font = [ defaultStyles() ],
+        // ignore font family settings? (proportional/fixed-width)
+        ignoreFontFamily = false;
 
 
     /**
@@ -39,7 +41,7 @@
             bold: false,
             italic: false,
             underline: false,
-            proportional: false,
+            proportional: true,
             original: 0     // the original integer value of the font
         };
     }
@@ -79,6 +81,10 @@
         }
 
         for( var prop in font[ targetWindow ] ) {
+            if( ignoreFontFamily && prop === 'proportional' ) {
+                continue;
+            }
+
             if( font[ targetWindow ].hasOwnProperty( prop ) ) {
                 elem.classList.remove( "font-" + prop );
 
@@ -92,7 +98,7 @@
             }
         }
 
-        if( font[ targetWindow ].hasOwnProperty( 'proportional' ) && !font[ targetWindow ].proportional ) {
+        if( !ignoreFontFamily && font[ targetWindow ].hasOwnProperty( 'proportional' ) && !font[ targetWindow ].proportional ) {
             newClasses.push( "font-fixed-width" );
         }
 
@@ -145,6 +151,11 @@
         get: function() {
             return font;
         }
+    };
+
+
+    style.init = function( options ) {
+        ignoreFontFamily = !options.engineFontFamily;
     };
 
 

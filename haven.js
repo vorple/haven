@@ -82,6 +82,11 @@
             unicode: !!opt.unicode
         });
 
+        // initialize style options
+        haven.style.init({
+            engineFontFamily: !!opt.engineFontFamily
+        });
+
         // remove the loader
         haven.assets.addCallback( function( cb ) {
             haven.loader.remove();

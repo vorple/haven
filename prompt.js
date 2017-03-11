@@ -481,6 +481,7 @@
         }
     };
 
+    prompt.resizeInput = resizeInput;
 
     /**
      * Either scroll the page down one page, or if the prompt is visible,
