@@ -1,15 +1,7 @@
-(function() {
-    "use strict";
+export function remove() {
+    const loaderOverlay = document.getElementById( 'loader' );
 
-    var loader = {};
-
-    loader.remove = function() {
-        var loaderOverlay = document.getElementById( 'loader' );
-
-        if( loaderOverlay ) {
-            loaderOverlay.parentNode.removeChild( loaderOverlay );
-        }
-    };
-
-    haven.loader = loader;
-})();
+    if( loaderOverlay ) {
+        loaderOverlay.parentNode.removeChild( loaderOverlay );
+    }
+}

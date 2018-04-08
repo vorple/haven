@@ -1,110 +1,97 @@
-(function() {
-    "use strict";
+import {addCallback, finalCallback} from "./assets";
+import {init as initFile} from "./file";
+import {init as inputInit} from "./input";
+import {remove} from "./loader";
+import {init as initOptions} from "./options";
+import {init as initPromt} from "./prompt";
+import {init as initStyle} from "./style";
+import FastClick from "./vendor/fastclick";
 
-    var haven = {};
-
-    /**
-     * Starts the C engine. The engine should have replaced main() with an
-     * otherwise empty function that only stores the command line arguments
-     * for passing to the real main() later.
-     *
-     * startEngine() calls haven_start() in the C code, which should run
-     * the real main() function that has been renamed to something else.
-     *
-     * Example:
-     *
-     * static char **my_argv;
-     *
-     * int main(int argc, char *argv[])
-     * {
+/**
+ * Starts the C engine. The engine should have replaced main() with an
+ * otherwise empty function that only stores the command line arguments
+ * for passing to the real main() later.
+ *
+ * startEngine() calls haven_start() in the C code, which should run
+ * the real main() function that has been renamed to something else.
+ *
+ * Example:
+ *
+ * static char **my_argv;
+ *
+ * int main(int argc, char *argv[])
+ * {
      *    my_argv = argv;
      *    return 0;
      * }
-     *
-     * int EMSCRIPTEN_KEEPALIVE haven_start()
-     * {
+ *
+ * int EMSCRIPTEN_KEEPALIVE haven_start()
+ * {
      *    return real_main(2, my_argv);
      * }
-     *
-     * int real_main(int argc, char *argv[])  // renamed from main()
+ *
+ * int real_main(int argc, char *argv[])  // renamed from main()
+ */
+function startEngine() {
+    _haven_start();
+}
+
+
+/**
+ * Start the game. If assets haven't loaded yet, the game starts
+ * as soon as they're ready.
+ */
+export function start( opt ) {
+    // read options from URL
+    initOptions( opt.options );
+
+    // load the story file
+    initFile( opt.virtualStoryfile );
+
+    // set up input handlers
+    addCallback( function( cb ) {
+        inputInit();
+        cb();
+    } );
+
+    // set up the prompt
+    initPromt( {
+        enginePrompt: !!opt.enginePrompt,
+        unicode: !!opt.unicode
+    } );
+
+    // initialize style options
+    initStyle( {
+        engineColors: !!opt.engineColors,
+        engineFontFamily: !!opt.engineFontFamily
+    } );
+
+    // remove the loader
+    addCallback( function( cb ) {
+        remove();
+        cb();
+    } );
+
+    // start the engine
+    finalCallback( startEngine );
+
+    /**
+     * fastclick.js initializer - fixes tapping issues in mobile browsers
      */
-    function startEngine() {
-        _haven_start();
+    if( 'addEventListener' in document ) {
+        document.addEventListener( 'DOMContentLoaded', function() {
+            FastClick.attach( document.body );
+        }, false );
     }
+}
 
+import * as fileMethods from "./file";
+import * as promptMethods from "./prompt";
+import * as windowMethods from "./window";
 
-    /**
-     * Show an error message and halt.
-     */
-    haven.error = function( message ) {
-        var elem = document.createElement( 'div' ),
-            spinner = document.getElementById( 'spinner' ),
-            loader = document.getElementById( 'loader' );
-
-        elem.id = 'fatal-error';
-        elem.innerHTML = message;
-        document.body.appendChild( elem );
-
-        // remove spinner animation if error happened on load
-        if( spinner ) {
-            spinner.parentNode.removeChild( spinner );
-        }
-
-        // visual notification that loading has stopped
-        if( loader ) {
-            loader.className = 'stopped';
-        }
-
-        throw new Error( message );
-    };
-
-
-    /**
-     * Start the game. If assets haven't loaded yet, the game starts
-     * as soon as they're ready.
-     */
-    haven.start = function( opt ) {
-        // read options from URL
-        haven.options.init( opt.options );
-
-        // load the story file
-        haven.file.init( opt.virtualStoryfile );
-
-        // set up input handlers
-        haven.assets.addCallback( function( cb ) {
-            haven.input.init();
-            cb();
-        });
-
-        // set up the prompt
-        haven.prompt.init({
-            enginePrompt: !!opt.enginePrompt,
-            unicode: !!opt.unicode
-        });
-
-        // initialize style options
-        haven.style.init({
-            engineFontFamily: !!opt.engineFontFamily
-        });
-
-        // remove the loader
-        haven.assets.addCallback( function( cb ) {
-            haven.loader.remove();
-            cb();
-        });
-
-        // start the engine
-        haven.assets.finalCallback( startEngine );
-
-        /**
-         * fastclick.js initializer - fixes tapping issues in mobile browsers
-         */
-        if( 'addEventListener' in document ) {
-            document.addEventListener( 'DOMContentLoaded', function() {
-                FastClick.attach( document.body );
-            }, false );
-        }
-    };
-
-    window.haven = haven;
-})();
+// expose methods for the C engine to use
+window.haven = {
+    file: fileMethods,
+    prompt: promptMethods,
+    window: windowMethods
+};
