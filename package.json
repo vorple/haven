@@ -14,5 +14,8 @@
   "bugs": {
     "url": "https://github.com/vorple/haven/issues"
   },
-  "homepage": "https://github.com/vorple/haven"
+  "homepage": "https://github.com/vorple/haven",
+  "dependencies": {
+    "custom-event-polyfill": "^0.3.0"
+  }
 }

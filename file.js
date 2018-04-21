@@ -1,3 +1,5 @@
+require( "custom-event-polyfill" );
+
 import { addCallback, finished } from "./assets";
 import error from "./error";
 import { keypress } from "./input";
@@ -138,8 +140,6 @@ export function init( virtualFilename ) {
 
     addCallback( writeGamefile );
 
-    xmlhttp.responseType = "arraybuffer";
-
     xmlhttp.onreadystatechange = function() {
         if( xmlhttp.readyState == XMLHttpRequest.DONE ) {
             switch( xmlhttp.status ) {
@@ -177,7 +177,7 @@ export function init( virtualFilename ) {
     };
 
     xmlhttp.open( "GET", requestUrl, true );
-    // xmlhttp.setRequestHeader( 'X-Proxy-URL', gameUrl );
+    xmlhttp.responseType = "arraybuffer";   // this must be exactly here, otherwise IE11 breaks
     xmlhttp.send();
 };
 
