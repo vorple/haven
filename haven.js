@@ -42,6 +42,20 @@ function startEngine() {
  * as soon as they're ready.
  */
 export function start( opt ) {
+    // load the Emterpreter engine
+    const xhr = new XMLHttpRequest();
+
+    xhr.open( 'GET', 'engine.bin', true );
+    xhr.responseType = 'arraybuffer';
+    xhr.onload = function() {
+        Module.emterpreterFile = xhr.response;
+
+        const script = document.createElement( 'script' );
+        script.src = 'engine.js';
+        document.body.appendChild( script );
+    };
+    xhr.send( null );
+
     // read options from URL
     initOptions( opt.options );
 
