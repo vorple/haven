@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "Haven IF interpreter frame",
   "scripts": {
-    "build": "rm -rf ../build/haven; mkdir ../build/haven; cp *.css ../build/haven; uglifyjs vendor/fastclick.js haven.js assets.js buffer.js file.js input.js loader.js options.js prompt.js state.js style.js window.js bootstrap.js -o ../build/haven/haven.min.js -c --screw-ie8",
     "lint": "jshint *.js"
   },
   "repository": {
@@ -15,9 +14,5 @@
   "bugs": {
     "url": "https://github.com/vorple/haven/issues"
   },
-  "homepage": "https://github.com/vorple/haven",
-  "devDependencies": {
-    "jshint": "^2.9.4",
-    "uglify-js": "^2.7.5"
-  }
+  "homepage": "https://github.com/vorple/haven"
 }
