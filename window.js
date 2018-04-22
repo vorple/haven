@@ -363,7 +363,7 @@ export function getUIState() {
         windowDimensions: windowDimensions,
         windowContents: windowContents
     };
-};
+}
 
 
 /**
@@ -391,18 +391,18 @@ export function measureDimensions() {
     outputContainer.appendChild( measureElem );
 
     dimensions.char.width = measureElem.offsetWidth / 5;
-    dimensions.line.width = Math.floor( outputDimensions.width / dimensions.char.width - 1 );
+    dimensions.line.width = Math.floor( ( outputDimensions.width - 1 ) / dimensions.char.width );
 
     measureElem.style.display = 'block';
     measureElemHeight = measureElem.clientHeight;
     measureElem.innerHTML += '<br>00000<br>00000';
-    dimensions.char.height = (measureElem.clientHeight - measureElemHeight) / 2;
+    dimensions.char.height = (measureElem.clientHeight - measureElemHeight) / 2 + 3;
     dimensions.line.height = Math.floor( outputDimensions.height / dimensions.char.height );
 
     measureElem.parentNode.removeChild( measureElem );
 
     return dimensions;
-};
+}
 
 
 /**
