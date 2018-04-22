@@ -3,7 +3,7 @@ import {init as initFile} from "./file";
 import {init as inputInit} from "./input";
 import {remove} from "./loader";
 import {init as initOptions} from "./options";
-import {init as initPromt} from "./prompt";
+import {init as initPrompt} from "./prompt";
 import {init as initStyle} from "./style";
 import FastClick from "./vendor/fastclick";
 
@@ -69,7 +69,7 @@ export function start( opt ) {
     } );
 
     // set up the prompt
-    initPromt( {
+    initPrompt( {
         enginePrompt: !!opt.enginePrompt,
         unicode: !!opt.unicode
     } );
@@ -100,6 +100,7 @@ export function start( opt ) {
 }
 
 import * as fileMethods from "./file";
+import * as inputMethods from "./input";
 import * as promptMethods from "./prompt";
 import * as stateMethods from "./state";
 import * as windowMethods from "./window";
@@ -107,6 +108,7 @@ import * as windowMethods from "./window";
 // expose methods for the C engine to use
 window.haven = {
     file: fileMethods,
+    input: inputMethods,
     prompt: promptMethods,
     state: stateMethods,
     window: windowMethods
