@@ -101,11 +101,13 @@ export function start( opt ) {
 
 import * as fileMethods from "./file";
 import * as promptMethods from "./prompt";
+import * as stateMethods from "./state";
 import * as windowMethods from "./window";
 
 // expose methods for the C engine to use
 window.haven = {
     file: fileMethods,
     prompt: promptMethods,
+    state: stateMethods,
     window: windowMethods
 };

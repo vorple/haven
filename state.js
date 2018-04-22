@@ -37,14 +37,18 @@ function readUIState () {
 
 export const autosave = {
     /**
-     * Delete the autosave file.
+     * Delete the autosave files.
      */
     remove: function() {
         try {
             FS.unlink( autosaveFilename );
         }
-        catch(e) {
+        catch(e) {}
+
+        try {
+            FS.unlink( autosaveFilename + '_uidata' );
         }
+        catch(e) {}
     },
 
     /**
@@ -74,20 +78,22 @@ export const autosave = {
             return;
         }
 
-        // save UI state
-        FS.writeFile(
-            autosaveFilename + '_uidata',
-            JSON.stringify( haven.window.getUIState() ),
-            {encoding: 'utf8'}
-        );
-
         // trigger engine autosave
-        Module.ccall(
+        const engineSaveSucceeded = Module.ccall(
             'haven_save_autosave',
             'int',
             [ 'string' ],
             [ autosaveFilename ]
         );
+
+        // save UI state
+        if( engineSaveSucceeded ) {
+            FS.writeFile(
+                autosaveFilename + '_uidata',
+                JSON.stringify( haven.window.getUIState() ),
+                {encoding: 'utf8'}
+            );
+        }
     },
 
     /**
