@@ -15,7 +15,7 @@ const opt = {
  * @param type
  * @param defaultValue
  */
-function getParameter( name, type, defaultValue ) {
+export function getParameter( name, type, defaultValue ) {
     var valueSearch = new RegExp( '[?&]' + name + '=(.*?)(#|&|$)', 'i' ).exec( window.location.href ),
         value;
 
@@ -104,6 +104,6 @@ export function init( defaults ) {
  * @param name
  * @returns {*}
  */
-export function setOption( name, value ) {
+export function set( name, value ) {
     opt[ name ] = value;
 }

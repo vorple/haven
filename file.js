@@ -40,6 +40,9 @@ function fnv32( a ) {
  * @return {boolean} true when all required assets have finished loading
  */
 function writeGamefile( done ) {
+    // re-show loader if hidden
+    document.getElementById( 'loader' ).style.display = "block";
+
     if( !interpreterLoaded || !isGamefileLoaded ) {
         if( !interpreterLoaded ) {
             document.getElementById( 'loader-message' ).innerHTML = 'Loading interpreter';
@@ -94,13 +97,42 @@ function writeGamefile( done ) {
  */
 export function init( virtualFilename ) {
     const gameUrl = get( 'story' );
+    const uploadedFile = get( 'uploadedFile' );
     const proxyOption = get( 'use_proxy' );
     let requestUrl;
     let useProxy;
 
+    const processStoryFile = function( file ) {
+        isGamefileLoaded = true;
+        gamefile = new Uint8Array( file );
+        checksum = fnv32( gamefile ).toString( 16 );
+
+        // signal that the story file is ready
+        finished( 'storyfile' );
+    };
+
     storyFilename = virtualFilename;
 
-    if( !gameUrl ) {
+    // if the user has uploaded a file, process that instead of loading from a URL
+    if( uploadedFile ) {
+        const reader = new FileReader();
+
+        reader.onload = function( e ) {
+            const uploadContainer = document.getElementById( 'uploadContainer' );
+
+            if( uploadContainer ) {
+                uploadContainer.parentNode.removeChild( uploadContainer );
+            }
+
+            processStoryFile( e.target.result );
+        };
+
+        addCallback( writeGamefile );
+        reader.readAsArrayBuffer( uploadedFile );
+
+        return;
+    }
+    else if( !gameUrl ) {
         error( "No story file specified" );
     }
 
@@ -144,12 +176,7 @@ export function init( virtualFilename ) {
         if( xmlhttp.readyState == XMLHttpRequest.DONE ) {
             switch( xmlhttp.status ) {
                 case 200:
-                    isGamefileLoaded = true;
-                    gamefile = new Uint8Array( xmlhttp.response );
-                    checksum = fnv32( gamefile ).toString( 16 );
-
-                    // signal that the story file is ready
-                    finished( 'storyfile' );
+                    processStoryFile( xmlhttp.response );
                     break;
 
                 case 404:
