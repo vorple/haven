@@ -78,7 +78,7 @@ function writeGamefile( done ) {
     FS.chdir( 'gamedata' );
 
     // synchronize with local data
-    FS.syncfs( true, function() {
+    syncfs( true, function() {
         if( get( 'autosave' ) ) {
             autosave.setName( '/gamedata_' + checksum + '/autosave' );
             autosave.restore();
@@ -218,7 +218,7 @@ export function init( virtualFilename ) {
  */
 export function prompt( why ) {
     const filename = window.prompt( "Enter filename " + why );
-    const input = getPrompt().getElementsByClassName( "INPUT" )[0];
+    const input = getPrompt().getElementsByTagName( "INPUT" )[0];
 
     if( filename && /\S/.test( filename ) ) {
         input.value = datadir + '/' + filename.split( '/' ).join( '-' );
@@ -229,16 +229,13 @@ export function prompt( why ) {
 
     // we'll have to wait for the UI to get ready before submitting the input
     setTimeout( function() {
-        getPrompt.dispatchEvent( new Event( 'submit' ) );
+        getPrompt().dispatchEvent( new Event( 'submit' ) );
 
         // ..and another timeout to sync the filesystem.
         // We should hook to the file save itself, but this should do for now,
         // especially since this exists only as a backup measure if the
         // same thing in the onbeforeunload event fails.
-        setTimeout( function() {
-            FS.syncfs( false, function() {
-            } );
-        }, 1000 );
+        setTimeout( syncfs, 1000 );
     }, 1 );
 };
 
@@ -263,16 +260,33 @@ export function readUIState() {
 
 /**
  * Synchronize virtual filesystem status with IndexedDB.
- * Called by the engine.
  */
-export function syncfs() {
-    FS.syncfs( false, function() {} );
+let syncing = false;
+let syncQueue = []; // for multiple simultaneous calls, put them in queue
+
+export function syncfs( populate = false, callback ) {
+    if( !syncing ) {
+        syncing = true;
+
+        FS.syncfs( populate, () => {
+            if( typeof callback === "function" ) {
+                callback();
+            }
+
+            syncing = false; 
+
+            if( syncQueue.length > 0 ) {
+                syncfs( ...syncQueue.shift() );
+            }
+        });
+    }
+    else {
+        syncQueue.push([ populate, callback ]);
+    }
 };
 
 
 // store data saved by the game file
-window.onbeforeunload = function() {
-    FS.syncfs( false, function() {} );
-};
+window.onbeforeunload = syncfs;
 
 document.getElementById( 'loader-message' ).innerHTML = 'Loading interpreter and game file';

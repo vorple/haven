@@ -43,6 +43,7 @@ function startEngine() {
  */
 export function start( opt ) {
     // load the Emterpreter engine
+    /*
     const xhr = new XMLHttpRequest();
 
     xhr.open( 'GET', 'engine.bin', true );
@@ -51,10 +52,11 @@ export function start( opt ) {
         Module.emterpreterFile = xhr.response;
 
         const script = document.createElement( 'script' );
-        script.src = 'engine.js';
+        script.src = 'hs.js';
         document.body.appendChild( script );
     };
     xhr.send( null );
+*/
 
     // read options from URL
     initOptions( opt.options );

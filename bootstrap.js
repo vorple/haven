@@ -13,6 +13,5 @@ window.Module = {
     printErr: function() {
         console.log( arguments );
         error( Array.prototype.slice.call(arguments).join(' ') );
-    },
-    TOTAL_MEMORY: 33554432  // Twice the default; this is enough to run any existing Glulx game.
+    }
 };

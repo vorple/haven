@@ -29,6 +29,8 @@ export function init() {
 }
 
 
+let keyResponse = function() {};
+
 export const keypress = {
     /**
      * Called when the game starts.
@@ -98,12 +100,7 @@ export const keypress = {
             return;
         }
 
-        Module.ccall(
-            'haven_getkey',
-            'null',
-            [ 'number' ],
-            [ keyCode ]
-        );
+        keyResponse( keyCode );
     },
 
     wait: function() {
@@ -114,8 +111,14 @@ export const keypress = {
 
         // if there's something in the keypress buffer, "push" that key
         if( keypressBuffer.length > 0 ) {
-            keypress.send({ keyCode: keypressBuffer.shift() });
+            setTimeout( () => keypress.send({ keyCode: keypressBuffer.shift() }), 0 );
         }
+    },
+
+    waitPromise: function() {
+        return new Promise( resolve => {
+            keyResponse = ( cmd ) => resolve( cmd );
+        });
     }
 };
 

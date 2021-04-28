@@ -482,6 +482,15 @@ for( let i = 0; i < defaultDiacriticsRemovalMap.length; i++ ) {
 }
 
 
+let lineResponse = function() {};
+
+export function waitLine() {
+    return new Promise( resolve => {
+        lineResponse = ( cmd ) => resolve( cmd );
+    });
+};
+
+
 /**
  * Initialize line input event handlers.
  */
@@ -515,12 +524,7 @@ export function init( opt ) {
         }
 
         // pass the command to the engine
-        Module.ccall(
-            'haven_getline',
-            'null',
-            [ 'string' ],
-            [ inputElem.value + '\n' ]
-        );
+        lineResponse( inputElem.value + '\n' );
 
         // cleanup
         inputElem.value = "";
