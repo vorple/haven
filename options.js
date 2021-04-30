@@ -1,9 +1,9 @@
-const opt = {
+let opt = {
     autosave: true,
-    exit_url: '',
+    exit_url: "",
     extra_opcodes: true,
-    proxy_url: 'proxy.php',
-    use_proxy: 'auto',
+    proxy_url: "https://zcode.appspot.com/proxy/?encode=base64&callback=processBase64Zcode&url=%s",
+    use_proxy: "auto",
     windowing: true
 };
 
@@ -16,28 +16,28 @@ const opt = {
  * @param defaultValue
  */
 export function getParameter( name, type, defaultValue ) {
-    var valueSearch = new RegExp( '[?&]' + name + '=(.*?)(#|&|$)', 'i' ).exec( window.location.href ),
+    var valueSearch = new RegExp( "[?&]" + name + "=(.*?)(#|&|$)", "i" ).exec( window.location.href ),
         value;
 
     if( valueSearch === null || valueSearch.length < 2 ) {
         return defaultValue;
     }
 
-    value = decodeURIComponent( valueSearch[ 1 ].split( '+' ).join( ' ' ) );
+    value = decodeURIComponent( valueSearch[ 1 ].split( "+" ).join( " " ) );
 
     switch( type ) {
-        case 'boolean':
-            if( value.toLowerCase() === 'true' || value === 'on' || value === '1' ) {
+        case "boolean":
+            if( value.toLowerCase() === "true" || value === "on" || value === "1" ) {
                 return true;
             }
 
-            if( value.toLowerCase() === 'false' || value === 'off' || value === '0' ) {
+            if( value.toLowerCase() === "false" || value === "off" || value === "0" ) {
                 return false;
             }
 
             return defaultValue;
 
-        case 'number':
+        case "number":
             if( parseFloat( value ) + "" === value ) {
                 return parseFloat( value );
             }
@@ -73,25 +73,25 @@ export function init( defaults ) {
 
     defaults = defaults || {};
 
-    for( option_key in defaults ) {
-        if( defaults.hasOwnProperty( option_key ) && defaults[ option_key ] !== undefined ) {
-            opt[ option_key ] = defaults[ option_key ];
-        }
-    }
+    opt = {
+        ...opt,
+        ...defaults
+    };
 
     if( !opt.lock_story ) {
-        opt.story = getParameter( 'story', 'string', opt.story );
+        // provide "storyfile" as an option to "story" to get around Quixe's automatic storyfile download if necessary
+        opt.story = getParameter( "story", "string", opt.story ) || getParameter( "storyfile", "string", opt.story );
     }
 
     if( !opt.lock_options ) {
         for( option_key in opt ) {
-            if( option_key !== 'story' && opt.hasOwnProperty( option_key ) ) {
+            if( option_key !== "story" && option_key !== "storyfile" && option_key in opt ) {
                 opt[ option_key ] = getParameter( option_key, typeof opt[ option_key ], opt[ option_key ] );
             }
         }
 
         // special cases
-        if( opt.exit_url === 'false' || opt.exit_url === '0' ) {
+        if( opt.exit_url === "false" || opt.exit_url === "0" ) {
             opt.exit_url = false;
         }
     }

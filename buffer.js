@@ -1,8 +1,15 @@
 import { textWasPrinted } from "./input";
+import { font } from "./style";
+import {
+    append as appendToWindow,
+    get as getWindow
+} from "./window";
 
 // output buffers for all windows
 const outputBuffer = [ "" ];
 
+// custom output filters
+let outputFilter = null;
 
 /**
  * Make text HTML-printable
@@ -20,20 +27,20 @@ function encodeHtml( text ) {
         }
         else {
             switch( text[ i ] ) {
-                case '&':
-                    encoded += '&amp;';
+                case "&":
+                    encoded += "&amp;";
                     break;
 
-                case '<':
-                    encoded += '&lt;';
+                case "<":
+                    encoded += "&lt;";
                     break;
 
-                case '>':
-                    encoded += '&gt;';
+                case ">":
+                    encoded += "&gt;";
                     break;
 
-                case '\r':
-                    encoded += '\n';
+                case "\r":
+                    encoded += "\n";
                     break;
 
                 default:
@@ -53,13 +60,13 @@ function encodeHtml( text ) {
  * @param text
  * @param targetWindow
  */
-export function append( text, targetWindow ) {
+export function append( text, targetWindow = 0 ) {
     if( !outputBuffer[ targetWindow ] ) {
         outputBuffer[ targetWindow ] = "";
     }
 
-    if( text.indexOf( '\n' ) > -1 || text.indexOf( '\r' ) > -1 ) {
-        const nextLBR = Math.max( text.lastIndexOf( '\n' ), text.lastIndexOf( '\r' ) ) + 1;
+    if( text.indexOf( "\n" ) > -1 || text.indexOf( "\r" ) > -1 ) {
+        const nextLBR = Math.max( text.lastIndexOf( "\n" ), text.lastIndexOf( "\r" ) ) + 1;
 
         outputBuffer[ targetWindow ] += encodeHtml( text.substr( 0, nextLBR ) );
         flush( targetWindow );
@@ -81,22 +88,52 @@ export function flush( targetWindow ) {
         for( var i in outputBuffer ) {
             flush( +i );
         }
-    }
 
-    if( !outputBuffer[ targetWindow ] || !haven.window.get( targetWindow ) ) {
         return;
     }
 
-//        console.log('flushing', outputBuffer[ targetWindow ] );
-    // if( outputBuffer[ targetWindow ] === '\n') debugger;
+    if( !outputBuffer[ targetWindow ] || !getWindow( targetWindow ) ) {
+        return;
+    }
 
-    haven.window.append( outputBuffer[ targetWindow ], targetWindow );
+    let output = outputBuffer[ targetWindow ];
+
+    // call output filters
+    if( targetWindow === 0 && outputFilter && output !== "" ) {
+        const currentStyles = font.get()[ 0 ];
+        const filterResult = outputFilter(
+            output,
+            {
+                style: {
+                    bold: Boolean( currentStyles.bold ),
+                    italic: Boolean( currentStyles.italic )
+                }
+            }
+        );
+
+        if( typeof filterResult === "string" ) {
+            output = filterResult;
+        }
+    }
+
+    appendToWindow( output, targetWindow );
     outputBuffer[ targetWindow ] = "";
 
     if( targetWindow === 0 ) {
         textWasPrinted( true );
     }
 }
+
+
+/**
+ * Register the output filter
+ */
+export function init( opt ) {
+    if( opt && opt.outputFilter ) {
+        outputFilter = opt.outputFilter;
+    }
+}
+
 
 /**
  * Add a newline to the buffer.
@@ -105,10 +142,10 @@ export function flush( targetWindow ) {
  */
 export function newline( targetWindow ) {
     if( outputBuffer[ targetWindow ] ) {
-        outputBuffer[ targetWindow ] += '\n';
+        outputBuffer[ targetWindow ] += "\n";
     }
     else {
-        outputBuffer[ targetWindow ] = '\n';
+        outputBuffer[ targetWindow ] = "\n";
     }
 
     flush( targetWindow );

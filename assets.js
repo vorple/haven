@@ -1,5 +1,5 @@
 // assets that need to load before we can start
-const expectedAssets = [ 'engine', 'storyfile' ];
+const expectedAssets = [ "storyfile" ];
 
 // functions that are called when all assets have loaded
 const callbacks = [];
@@ -11,23 +11,14 @@ let lastCallback;
 /**
  * When all assets are ready, run the callbacks.
  */
-function done() {
-    let i = 0;
-    const metaCallback = function() {
-        i++;
-        if( i < callbacks.length ) {
-            callbacks[ i ]( metaCallback );
-        }
-        else if( lastCallback ) {
-            lastCallback();
-        }
-    };
-
-    if( callbacks.length === 0 ) {
-        return;
+async function done() {
+    for( let i = 0; i < callbacks.length; ++i ) {
+        await callbacks[ i ]();
     }
 
-    callbacks[ 0 ]( metaCallback );
+    if( lastCallback ) {
+        await lastCallback();
+    }
 }
 
 
@@ -47,7 +38,7 @@ export function addCallback( cb ) {
     }
 
     callbacks.push( cb );
-};
+}
 
 
 /**
@@ -57,13 +48,13 @@ export function addCallback( cb ) {
  */
 export function expect( asset ) {
     if( expectedAssets.length === 0 ) {
-        console.warn( 'An expected asset "' + asset + '" was added '
-            + 'but all previous assets have already finished loading' );
+        console.warn( "An expected asset \"" + asset + "\" was added "
+            + "but all previous assets have already finished loading" );
         return;
     }
 
     expectedAssets.push( asset );
-};
+}
 
 
 /**
@@ -74,7 +65,7 @@ export function expect( asset ) {
  */
 export function finalCallback( cb ) {
     lastCallback = cb;
-};
+}
 
 
 /**
@@ -99,4 +90,4 @@ export function finished( asset ) {
     }
 
     return true;
-};
+}

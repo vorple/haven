@@ -1,7 +1,7 @@
 {
-  "name": "haven",
+  "name": "haven-if",
   "version": "1.0.0",
-  "description": "Haven IF interpreter frame",
+  "description": "Haven display library for interactive fiction",
   "scripts": {
     "lint": "jshint *.js"
   },
@@ -16,6 +16,7 @@
   },
   "homepage": "https://github.com/vorple/haven",
   "dependencies": {
+    "browserfs": "^1.4.3",
     "custom-event-polyfill": "^0.3.0"
   }
 }

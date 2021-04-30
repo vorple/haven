@@ -14,12 +14,12 @@ import {
 } from "./style";
 
 // DOM containers for windows
-const outputWindows = [ document.getElementById( 'window0' ) ];
+const outputWindows = [];
 
 // the parent of all windows
-const mainContainer = document.getElementById( 'output' );
-const currentContainers = [ outputWindows[ 0 ] ];
+const currentContainers = [];
 const windowDimensions = [];
+let mainContainer = null;
 
 let cursorPosition = [];
 
@@ -33,19 +33,19 @@ let cursorPosition = [];
  */
 function createLines( amount, column, havenWindow ) {
     for( let i = 0; i < amount; ++i ) {
-        const newlineFiller = document.createElement( 'span' );
+        const newlineFiller = document.createElement( "span" );
 
-        newlineFiller.className = 'font-fixed-width';
-        newlineFiller.innerHTML = '\n';
-        outputWindows[ havenWindow ].appendChild( newlineFiller );
+        newlineFiller.className = "font-fixed-width";
+        newlineFiller.innerHTML = "\n";
+        currentContainers[ havenWindow ].appendChild( newlineFiller );
     }
 
     if( column > 0 ) {
-        const spaceFiller = document.createElement( 'span' );
+        const spaceFiller = document.createElement( "span" );
 
         spaceFiller.innerHTML = Array( column ).join( " " );
-        spaceFiller.className = 'font-fixed-width';
-        outputWindows[ havenWindow ].appendChild( spaceFiller );
+        spaceFiller.className = "font-fixed-width";
+        currentContainers[ havenWindow ].appendChild( spaceFiller );
     }
 
     position.reset( havenWindow );
@@ -61,8 +61,7 @@ function createLines( amount, column, havenWindow ) {
  * @param havenWindow
  */
 function replacePart( line, col, newContent, havenWindow ) {
-//        console.log( 'Replacing line', line, 'col', col, 'with', newContent.innerHTML, 'in window', havenWindow );
-    const output = outputWindows[ havenWindow ];
+    const output = currentContainers[ havenWindow ];
     const nodes = textNodesUnder( output );
     const range = document.createRange();
 
@@ -73,14 +72,14 @@ function replacePart( line, col, newContent, havenWindow ) {
 
     // check if the new content goes on top of existing content or does the
     // container "overflow" (i.e. new lines need to be created as a padding)
-    const overflow = (function() {
+    const overflow = ( function() {
         for( let i = 0; i < nodes.length; ++i ) {
             let textContent = nodes[ i ].textContent;
             if( currentLine === line ) {
                 for( let j = 0; j < textContent.length; ++j ) {
                     if( startFound ) {
                         endCounter++;
-                        if( endCounter === newContent.textContent.length || textContent[ j ] === '\n' ) {
+                        if( endCounter === newContent.textContent.length || textContent[ j ] === "\n" ) {
                             range.setEnd( nodes[ i ], j );
                             return false;
                         }
@@ -93,10 +92,10 @@ function replacePart( line, col, newContent, havenWindow ) {
                             return false;
                         }
                     }
-                    else if( textContent[ j ] === '\n' ) {
-                        const filler = document.createTextNode( Array( col - currentCol + 1 ).join( ' ' ) + '\n' );
+                    else if( textContent[ j ] === "\n" ) {
+                        const filler = document.createTextNode( Array( col - currentCol + 1 ).join( " " ) + "\n" );
 
-                        nodes[ i ].textContent = textContent.substr( 0, j ) + ' ';
+                        nodes[ i ].textContent = textContent.substr( 0, j ) + " ";
                         nodes[ i ].parentNode.insertBefore( filler, nodes[ i ].nextSibling );
                         range.setStart( filler, col - currentCol - 1 );
                         range.setEnd( filler, col - currentCol - 1 );
@@ -107,7 +106,7 @@ function replacePart( line, col, newContent, havenWindow ) {
                 }
             }
             else {
-                if( textContent.indexOf( '\n' ) > -1 ) {
+                if( textContent.indexOf( "\n" ) > -1 ) {
                     currentLine++;
                 }
             }
@@ -122,8 +121,8 @@ function replacePart( line, col, newContent, havenWindow ) {
         return;
     }
 
-    if( newContent.textContent.indexOf( '\n' ) > -1 ) {
-        newContent.textContent = newContent.textContent.replace( '\n', '' );
+    if( newContent.textContent.indexOf( "\n" ) > -1 ) {
+        newContent.textContent = newContent.textContent.replace( "\n", "" );
         cursorPosition[ havenWindow ].line++;
         cursorPosition[ havenWindow ].col = 1;
     }
@@ -171,7 +170,7 @@ function textNodesUnder( node ) {
  * @param targetWindow
  */
 export function append( content, targetWindow ) {
-    const textContainer = document.createElement( 'span' );
+    const textContainer = document.createElement( "span" );
 
     if( !cursorPosition[ targetWindow ] ) {
         cursorPosition[ targetWindow ] = {
@@ -182,16 +181,14 @@ export function append( content, targetWindow ) {
 
     applyStyle( textContainer, targetWindow );
     textContainer.innerHTML = content;
-    // console.log( content, content.length );
 
     if( cursorPosition[ targetWindow ].col !== null && cursorPosition[ targetWindow ].line !== null ) {
         replacePart( cursorPosition[ targetWindow ].line, cursorPosition[ targetWindow ].col, textContainer, targetWindow );
     }
     else {
-//             outputWindows[ targetWindow ].appendChild( textContainer );
         currentContainers[ targetWindow ].appendChild( textContainer );
     }
-};
+}
 
 
 /**
@@ -204,6 +201,7 @@ export function clear( targetWindow ) {
         flush( 0 );
         mainContainer.innerHTML = "";
         mainContainer.appendChild( outputWindows[ 0 ] );
+        newTurnContainer( 0 );
         applyStyle( outputWindows[ 0 ], 0 );
         applyStyle( document.body, 0 );
         position.reset();
@@ -213,24 +211,19 @@ export function clear( targetWindow ) {
             return;
         }
 
-// console.log( 'clear window', targetWindow );
         flush( targetWindow );
         outputWindows[ targetWindow ].innerHTML = "";
-        applyStyle( outputWindows[ targetWindow ], targetWindow );
 
-        // when clearing the main window, set the entire page's style
+        // when clearing the main window, set the entire page's style and create a new turn container
         if( targetWindow === 0 ) {
+            newTurnContainer( 0 );
             applyStyle( document.body, 0 );
         }
 
+        applyStyle( outputWindows[ targetWindow ], targetWindow );
         position.reset( targetWindow );
     }
-
-    // don't scroll automatically right after clearing the main window
-    if( targetWindow < 1 ) {
-        // hugoui.doScroll = false;
-    }
-};
+}
 
 
 /**
@@ -243,7 +236,6 @@ export function clear( targetWindow ) {
  * @param bottom
  */
 export function create( outputWindow, left, top, right, bottom ) {
-//        console.log( 'creating window', outputWindow + ':  left', left, 'top', top, 'right', right, 'bottom', bottom );
     const dimensions = measureDimensions();
     const charHeight = dimensions.char.height;
     const mainContainer = get( 0 ).parentNode;
@@ -257,15 +249,13 @@ export function create( outputWindow, left, top, right, bottom ) {
         bottom: bottom
     };
 
-    if( !getOption( 'windowing' ) ) {
+    if( !getOption( "windowing" ) ) {
         return false;
     }
 
     // the main window only changes size
     if( outputWindow === 0 ) {
-//                outputWindow[0].style.paddingLeft = ( left - 1 ) + 'px';
-        get( 0 ).style.paddingTop = ((top - 1) * dimensions.char.height) + 'px';
-//                outputWindow[0].style.width = ( ( right + 1 ) * dimensions.char.width ) + 'px';
+        get( 0 ).style.paddingTop = ( ( top - 1 ) * dimensions.char.height ) + "px";
         return;
     }
 
@@ -273,18 +263,18 @@ export function create( outputWindow, left, top, right, bottom ) {
         mainContainer.removeChild( get( outputWindow ) );
     }
 
-    newWindow = document.createElement( 'div' );
-    newWindow.id = 'window' + outputWindow;
-    newWindow.className = 'havenwindow font-fixed-width';
-    newWindow.style.height = charHeight * (bottom - top + 1) + 'px';
-    newWindow.style.top = ((top - 1) * charHeight) + 'px';
-    newWindow.style.marginLeft = (left - 1) + 'px';
-    newWindow.style.width = ((right - left + 2) * dimensions.char.width) + 'px';
+    newWindow = document.createElement( "div" );
+    newWindow.id = "window" + outputWindow;
+    newWindow.className = "havenwindow font-fixed-width";
+    newWindow.style.height = charHeight * ( bottom - top + 1 ) + "px";
+    newWindow.style.top = ( ( top - 1 ) * charHeight ) + "px";
+    newWindow.style.marginLeft = ( left - 1 ) + "px";
+    newWindow.style.width = ( ( right - left + 2 ) * dimensions.char.width ) + "px";
 
     outputWindows[ outputWindow ] = newWindow;
     currentContainers[ outputWindow ] = newWindow;
     container.append( newWindow, mainContainer );
-};
+}
 
 
 /**
@@ -292,7 +282,7 @@ export function create( outputWindow, left, top, right, bottom ) {
  */
 export const container = {
     append: function( container, target ) {
-        if( typeof target === 'number' ) {
+        if( typeof target === "number" ) {
             outputWindows[ target ].appendChild( container );
         }
         else {
@@ -351,7 +341,7 @@ export function getUIState() {
 
     // this should be done better, but remove the last line break
     // because restoring adds one back again
-    const lastLbr = windowContents[ 0 ].lastIndexOf( '\n' );
+    const lastLbr = windowContents[ 0 ].lastIndexOf( "\n" );
     windowContents[ 0 ] = windowContents[ 0 ].substring( 0, lastLbr ) + windowContents[ 0 ].substring( lastLbr + 1 );
 
     return {
@@ -363,6 +353,17 @@ export function getUIState() {
         windowDimensions: windowDimensions,
         windowContents: windowContents
     };
+}
+
+
+/**
+ * Save references to HTML elements.
+ */
+export function init() {
+    mainContainer = document.getElementById( "output" );
+    outputWindows.push( document.getElementById( "window0" ) );
+    currentContainers.push( outputWindows[ 0 ] );
+    newTurnContainer( 0 );
 }
 
 
@@ -379,29 +380,45 @@ export function measureDimensions() {
             line: {},
             char: {}
         };
-    const measureElem = document.createElement( 'span' );
+    const measureElem = document.createElement( "span" );
     const outputDimensions = dimensions.window;
 
     let measureElemHeight;
 
-    measureElem.innerHTML = '00000<br>00000<br>00000';
-    measureElem.className = 'font-fixed-width';
-    measureElem.style.display = 'inline-block';
+    measureElem.innerHTML = "00000<br>00000<br>00000";
+    measureElem.className = "font-fixed-width";
+    measureElem.style.display = "inline-block";
 
     outputContainer.appendChild( measureElem );
 
     dimensions.char.width = measureElem.offsetWidth / 5;
     dimensions.line.width = Math.floor( ( outputDimensions.width - 1 ) / dimensions.char.width );
 
-    measureElem.style.display = 'block';
+    measureElem.style.display = "block";
     measureElemHeight = measureElem.clientHeight;
-    measureElem.innerHTML += '<br>00000<br>00000';
-    dimensions.char.height = (measureElem.clientHeight - measureElemHeight) / 2 + 3;
+    measureElem.innerHTML += "<br>00000<br>00000";
+    dimensions.char.height = ( measureElem.clientHeight - measureElemHeight ) / 2 + 3;
     dimensions.line.height = Math.floor( outputDimensions.height / dimensions.char.height );
 
     measureElem.parentNode.removeChild( measureElem );
 
     return dimensions;
+}
+
+
+/**
+ * Creates a container for a single turn's content and appends it to the window
+ * and sets the classes of previous containers to match the new situation.
+ */
+export function newTurnContainer( targetWindow ) {
+    const parentWindow = outputWindows[ targetWindow ];
+    const newTurn = document.createElement( "div" );
+
+    newTurn.className = "turn current";
+    parentWindow.appendChild( newTurn );
+    container.set( newTurn, targetWindow );
+
+    return newTurn;
 }
 
 
@@ -412,10 +429,10 @@ export const position = {
     reset: function( targetWindow ) {
         // if no window specified, reset all positions
         if( targetWindow === undefined ) {
-            cursorPosition = [{
+            cursorPosition = [ {
                 col: null,
                 line: null
-            }];
+            } ];
         }
         else {
             position.set( null, null, targetWindow );

@@ -20,16 +20,16 @@ let autosaveFilename = "";
 /**
  * Read the UI state from the filesystem.
  */
-function readUIState () {
+function readUIState() {
     try {
         const state = FS.readFile(
-            autosaveFilename + '_uidata',
-            {encoding: 'utf8'}
+            autosaveFilename + "_uidata",
+            { encoding: "utf8" }
         );
 
         return JSON.parse( state );
     }
-    catch(e) {
+    catch( e ) {
         return null;
     }
 }
@@ -43,12 +43,12 @@ export const autosave = {
         try {
             FS.unlink( autosaveFilename );
         }
-        catch(e) {}
+        catch( e ) {}
 
         try {
-            FS.unlink( autosaveFilename + '_uidata' );
+            FS.unlink( autosaveFilename + "_uidata" );
         }
-        catch(e) {}
+        catch( e ) {}
     },
 
     /**
@@ -62,36 +62,36 @@ export const autosave = {
             FS.stat( autosaveFilename );
 
             Module.ccall(
-                'hugojs_set_autosave_filename',
-                'null',
-                [ 'string' ],
+                "hugojs_set_autosave_filename",
+                "null",
+                [ "string" ],
                 [ autosaveFilename ]
             );
         }
-        catch(e) {
+        catch( e ) {
             // autosave file doesn't exist, do nothing
         }
     },
 
     save: function() {
-        if( !getOption( 'autosave' ) ) {
+        if( !getOption( "autosave" ) ) {
             return;
         }
 
         // trigger engine autosave
         const engineSaveSucceeded = Module.ccall(
-            'haven_save_autosave',
-            'int',
-            [ 'string' ],
+            "haven_save_autosave",
+            "int",
+            [ "string" ],
             [ autosaveFilename ]
         );
 
         // save UI state
         if( engineSaveSucceeded ) {
             FS.writeFile(
-                autosaveFilename + '_uidata',
+                autosaveFilename + "_uidata",
                 JSON.stringify( haven.window.getUIState() ),
-                {encoding: 'utf8'}
+                { encoding: "utf8" }
             );
         }
     },
@@ -118,7 +118,7 @@ export function restoreUI() {
     }
 
     // if windowing has been set off in options, restore only the main window
-    if( getOption( 'windowing' ) ) {
+    if( getOption( "windowing" ) ) {
         windowCount = savedState.windowContents.length;
     }
     else {
@@ -155,16 +155,16 @@ export function restoreUI() {
     // TODO: only for Hugo!
     // set the same style we had when saving
     Module.ccall(
-        'hugojs_set_font',
-        'null',
-        [ 'int' ],
+        "hugojs_set_font",
+        "null",
+        [ "int" ],
         [ savedState.font[ 0 ].original ]
     );
 
     Module.ccall(
-        'hugojs_set_colors',
-        'null',
-        [ 'int', 'int' ],
+        "hugojs_set_colors",
+        "null",
+        [ "int", "int" ],
         [ savedState.currentColors[ 0 ].text, savedState.currentColors[ 0 ].background ]
     );
 
@@ -172,6 +172,6 @@ export function restoreUI() {
     history.set( savedState.cmdHistory || [] );
 
     // scroll to the bottom
-    window.scrollTo( 0, 9e9 );
+    window.scrollTo( 0, ( document.scrollingElement || document.body ).scrollHeight );
     setDoScroll();
 }
