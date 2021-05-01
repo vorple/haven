@@ -9,7 +9,8 @@ import { autosave } from "./state";
 
 import {
     container as windowContainer,
-    get as getWindow
+    get as getWindow,
+    newTurnContainer
 } from "./window";
 
 // command history
@@ -597,24 +598,18 @@ export async function sendCommand( e, command ) {
             currentCmdIndex = cmdHistory.length;
         }
 
-
-        // append the command to the transcript, unless the submit events tells us not to
-        if( !enginePrompt && !isSilent ) {
-            appendPrompt( prefix.get(), transcriptCommand, 0 );
+        // Vorple-specific
+        if( !enginePrompt ) {
+            // Turn has ended, create a new container for the next turn.
+            // Do this before appending the command to the transcript so that
+            // the command and its response are in the same container.
+            newTurnContainer( 0 );
+            
+            // append the command to the transcript, unless the submit events tells us not to
+            if( !isSilent ) {
+                appendPrompt( prefix.get(), transcriptCommand, 0 );
+            }
         }
-
-        /* VORPLE:
-
-        // Turn has ended, create a new container for the next turn.
-        // Do this before appending the command to the transcript so that
-        // the command and its response are in the same container.
-        newTurnContainer( 0 );
-
-        // append the command to the transcript, unless the submit events tells us not to
-        if( !enginePrompt && !isSilent ) {
-            appendPrompt( prefix.get(), transcriptCommand, 0 );
-        }
-        */
 
         // send the final command to the interpreter
         sendToEngine( finalValue );
@@ -664,6 +659,11 @@ export function init( opt ) {
     // make a note if the engine handles printing the prompt or not
     enginePrompt = !!opt.enginePrompt;
     useUnicode = !!opt.unicode;
+
+    // set the engine input function if provided
+    if( opt.engineInputFunction ) {
+        setEngineInputFunction( opt.engineInputFunction );
+    }
 
     // handle line input submission
     promptElem.addEventListener( "submit", function( e ) {

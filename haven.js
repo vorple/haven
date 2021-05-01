@@ -115,6 +115,7 @@ export async function start( opt ) {
 
     // set up the prompt
     initPrompt({
+        engineInputFunction: opt.engineInputFunction,
         enginePrompt: !!opt.enginePrompt,
         expectHook: opt.hooks && opt.hooks.expectCommand,
         inputFilter: opt.filters && opt.filters.input,
@@ -144,7 +145,7 @@ export async function start( opt ) {
 
 
 import * as bufferMethods from "./buffer";
-import * as fileMethods from "../file";
+import * as fileMethods from "./file";
 import * as inputMethods from "./input";
 import * as promptMethods from "./prompt";
 import * as stateMethods from "./state";
