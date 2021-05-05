@@ -2,6 +2,7 @@ import { flush } from "./buffer";
 
 import {
     getMode as getInputMode,
+    isBlocked,
     setMode as setInputMode
 } from "./input";
 
@@ -671,6 +672,15 @@ export function init( opt ) {
         sendCommand( e );
     }, false );
 
+    // block input if that has been requested
+    inputElem.addEventListener( "keydown", function( e ) {
+        if( isBlocked() ) {
+            e.preventDefault();
+            e.stopPropagation();
+            return;
+        }
+    }, false );
+    
     // Command history. Adapted from Parchment.
     inputElem.addEventListener( "keydown", function( e ) {
         const keyCode = e.which || e.keyCode;

@@ -15,6 +15,18 @@ let isTextPrinted = false;
 // custom keypress hooks
 let submitHook = null;
 
+// is input blocked?
+let blocked = false;
+
+
+/**
+ * Prevents user input.
+ */
+ export function block() {
+    blocked = true;
+}
+
+
 /**
  * Returns the current input mode.
  *
@@ -36,9 +48,26 @@ export function init( opt ) {
     submitHook = opt.submitHook;
 
     // listen to keypresses and mouse clicks
-    document.addEventListener( "keydown", keypress.send, false );
-    document.addEventListener( "click", keypress.send, false );
+    const keypressFunction = ( ...args ) => {
+        if( !blocked ) {
+            keypress.send( ...args );
+        }
+    };
+
+    document.addEventListener( "keydown", keypressFunction, false );
+    document.addEventListener( "click", keypressFunction, false );
 }
+
+
+/**
+ * Returns the input block status
+ * 
+ * @returns {boolean} True if blocked
+ */
+export function isBlocked() {
+    return blocked;
+}
+
 
 const keypressListeners = [];
 
@@ -217,6 +246,9 @@ export function textWasPrinted( newState = true ) {
     isTextPrinted = newState;
 }
 
-export function getTextWasPrinted() {
-    return textWasPrinted;
+/**
+ * Unblock the UI.
+ */
+ export function unblock() {
+    blocked = false;
 }
