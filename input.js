@@ -18,11 +18,12 @@ let submitHook = null;
 // is input blocked?
 let blocked = false;
 
+let keyResponse = () => {};
 
 /**
  * Prevents user input.
  */
- export function block() {
+export function block() {
     blocked = true;
 }
 
@@ -52,7 +53,10 @@ export function getIsTextPrinted() {
  */
 export function init( opt ) {
     // register hooks
-    keypress.addListener( opt.expectHook );
+    if( typeof opt.expectHook === "function" ) {
+        keypress.addListener( opt.expectHook );
+    }
+
     submitHook = opt.submitHook;
 
     // listen to keypresses and mouse clicks
@@ -69,7 +73,7 @@ export function init( opt ) {
 
 /**
  * Returns the input block status
- * 
+ *
  * @returns {boolean} True if blocked
  */
 export function isBlocked() {
@@ -212,8 +216,14 @@ export const keypress = {
                 }
             }
 
-            window.Glk.sendChar( keyCode );
+            if( window.Glk ) {
+                window.Glk.sendChar( keyCode );
+            }
+            else {
+                keyResponse( keyCode );
+            }
         }
+
     },
 
     wait: function() {
@@ -231,6 +241,12 @@ export const keypress = {
                 keypress.send({ keyCode: keypressBuffer.shift() });
             }
         }, 1 );
+    },
+
+    waitPromise: function() {
+        return new Promise( resolve => {
+            keyResponse = ( cmd ) => resolve( cmd );
+        });
     }
 };
 
@@ -257,6 +273,6 @@ export function textWasPrinted( newState = true ) {
 /**
  * Unblock the UI.
  */
- export function unblock() {
+export function unblock() {
     blocked = false;
 }
