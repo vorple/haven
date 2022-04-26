@@ -1,3 +1,4 @@
+import { syncfs } from "./file";
 import { get as getOption } from "./options";
 import { history, setDoScroll } from "./prompt";
 
@@ -5,6 +6,7 @@ import {
     clear as clearWindow,
     create as createWindow,
     get as getWindow,
+    getUIState,
     position as windowPosition
 } from "./window";
 
@@ -43,12 +45,18 @@ export const autosave = {
         try {
             FS.unlink( autosaveFilename );
         }
-        catch( e ) {}
+        catch( e ) {
+            // do nothing
+        }
 
         try {
             FS.unlink( autosaveFilename + "_uidata" );
         }
-        catch( e ) {}
+        catch( e ) {
+            // do nothing
+        }
+
+        syncfs( false );
     },
 
     /**
@@ -90,7 +98,7 @@ export const autosave = {
         if( engineSaveSucceeded ) {
             FS.writeFile(
                 autosaveFilename + "_uidata",
-                JSON.stringify( haven.window.getUIState() ),
+                JSON.stringify( getUIState() ),
                 { encoding: "utf8" }
             );
         }
@@ -147,7 +155,7 @@ export function restoreUI() {
 
     for( let i = 0; i < savedState.windowContents.length; ++i ) {
         getWindow( i ).innerHTML = savedState.windowContents[ i ];
-        applyStyle( haven.window.get( i ), i );
+        applyStyle( getWindow( i ), i );
     }
 
     applyStyle( document.body, 0 );

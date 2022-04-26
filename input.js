@@ -38,6 +38,14 @@ export function getMode() {
 
 
 /**
+ * Returns the isTextPrinted flag.
+ */
+export function getIsTextPrinted() {
+    return isTextPrinted;
+}
+
+
+/**
  * Registers listeners and hooks
  *
  * @param {object} opt
