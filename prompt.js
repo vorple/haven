@@ -11,7 +11,8 @@ import { autosave } from "./state";
 import {
     container as windowContainer,
     get as getWindow,
-    newTurnContainer
+    newTurnContainer,
+    rotateTurnMarkers
 } from "./window";
 
 // command history
@@ -171,20 +172,8 @@ export function expectInput() {
     // show the prompt
     show();
 
-    // rotate turn markers
-    const parentWindow = getWindow( 0 );
-    const previousTurn = parentWindow.querySelector( ".turn.previous" );
-
-    if( previousTurn ) {
-        previousTurn.classList.remove( "previous" );
-    }
-
-    const currentTurn = parentWindow.querySelector( ".turn.current" );
-
-    if( currentTurn ) {
-        currentTurn.classList.remove( "current" );
-        currentTurn.classList.add( "previous" );
-    }
+    // set the classes for containers
+    rotateTurnMarkers();
 
     // trigger hooks
     if( typeof expectHook === "function" ) {

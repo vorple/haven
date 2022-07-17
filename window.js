@@ -373,13 +373,13 @@ export function init() {
 export function measureDimensions() {
     const outputContainer = get( 0 ).parentNode;
     const dimensions = {
-            window: {
-                width: parseInt( window.getComputedStyle( outputContainer ).width, 10 ),
-                height: window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight
-            },
-            line: {},
-            char: {}
-        };
+        window: {
+            width: parseInt( window.getComputedStyle( outputContainer ).width, 10 ),
+            height: window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight
+        },
+        line: {},
+        char: {}
+    };
     const measureElem = document.createElement( "span" );
     const outputDimensions = dimensions.window;
 
@@ -419,6 +419,27 @@ export function newTurnContainer( targetWindow ) {
     container.set( newTurn, targetWindow );
 
     return newTurn;
+}
+
+
+/**
+ * Rotates turn markers so that the container previously marked "previous"
+ * loses that class and "current" becomes "previous".
+ */
+export function rotateTurnMarkers() {
+    const parentWindow = outputWindows[ 0 ];
+    const previousTurns = parentWindow.querySelectorAll( ".turn.previous" );
+
+    for( let turn of previousTurns ) {
+        turn.classList.remove( "previous" );
+    }
+
+    const currentTurns = parentWindow.querySelectorAll( ".turn.current" );
+
+    for( let turn of currentTurns ) {
+        turn.classList.remove( "current" );
+        turn.classList.add( "previous" );
+    }
 }
 
 
